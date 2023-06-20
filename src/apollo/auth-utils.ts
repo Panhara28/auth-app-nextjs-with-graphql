@@ -17,8 +17,8 @@ export const adminOnly = [SUPER_ADMIN];
 export const ownerOnly = [STORE_OWNER];
 export const ownerAndStaffOnly = [STORE_OWNER, STAFF];
 
-export function setAuthCredentials(token: string) {
-  Cookie.set(AUTH_CRED, token);
+export function setAuthCredentials(token: string, permissions: any) {
+  Cookie.set(AUTH_CRED, JSON.stringify({ token, permissions }));
 }
 
 export function setEmailVerified(emailVerified: boolean) {
@@ -31,18 +31,20 @@ export function getEmailVerified(): {
   return emailVerified ? JSON.parse(emailVerified) : false;
 }
 
-export function getAuthCredentials(context?: any) {
+export function getAuthCredentials(context?: any): {
+  token: string | null;
+  permissions: string[] | null;
+} {
   let authCred;
   if (context) {
-    // JWT from API
     authCred = parseSSRCookie(context)[AUTH_CRED];
   } else {
     authCred = Cookie.get(AUTH_CRED);
   }
   if (authCred) {
-    return authCred;
+    return JSON.parse(authCred);
   }
-  return { token: null };
+  return { token: null, permissions: null };
 }
 
 export function parseSSRCookie(context: any) {
@@ -60,13 +62,11 @@ export function hasAccess(
   }
   return false;
 }
-export function isAuthenticated({ data }: any) {
-  if (data?.token) {
-    console.log("data?.token tr", data?.token);
-    return true;
-  } else {
-    console.log("data?.token fa", data?.token);
 
-    return false;
-  }
+export function isAuthenticated(_cookies: any) {
+  return (
+    !!_cookies[TOKEN] &&
+    Array.isArray(_cookies[PERMISSIONS]) &&
+    !!_cookies[PERMISSIONS].length
+  );
 }

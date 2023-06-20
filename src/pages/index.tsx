@@ -1,33 +1,39 @@
-import { getAuthCredentials, isAuthenticated } from "@/apollo/auth-utils";
-import AppLayout from "@/component/AppLayout";
-import Dashboard from "@/component/Dashboard";
+import dynamic from "next/dynamic";
 import type { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
+import AppLayout from "@/component/AppLayout";
+import {
+  allowedRoles,
+  getAuthCredentials,
+  hasAccess,
+  isAuthenticated,
+} from "@/apollo/auth-utils";
 
-export default function Home() {
-  console.log("1");
-  return (
-    <>
-      <Dashboard />
-    </>
-  );
+const AdminDashboard = dynamic(() => import("@/component/AdminDashboard"));
+const OwnerDashboard = dynamic(() => import("@/component/OwnerDashboard"));
+
+export default function Dashboard({ userPermissions }: any) {
+  return <AdminDashboard />;
 }
 
-// Home.Layout = AppLayout;
+Dashboard.Layout = AppLayout;
 
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//   // TODO: Improve it
-//   const token = getAuthCredentials(ctx);
-//   console.log(isAuthenticated({ token }));
-//   if (isAuthenticated({ token })) {
-//     return {
-//       redirect: {
-//         destination: "/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-//   return {
-//     props: {},
-//   };
-// };
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  // TODO: Improve it
+  const { token, permissions } = getAuthCredentials(ctx);
+  if (
+    !isAuthenticated({ token, permissions }) ||
+    !hasAccess(allowedRoles, permissions)
+  ) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      userPermissions: permissions,
+    },
+  };
+};

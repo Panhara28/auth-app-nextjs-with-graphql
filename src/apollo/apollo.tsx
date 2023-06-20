@@ -26,7 +26,8 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
 function createApolloClient() {
   const authLink = setContext((_, { headers }) => {
-    const token = getAuthCredentials();
+    const { token } = getAuthCredentials();
+    console.log("Log from CreateApolloClient", token);
     return {
       headers: {
         ...headers,
@@ -38,8 +39,8 @@ function createApolloClient() {
     if (graphQLErrors)
       graphQLErrors.map(({ message, locations, path }) => {
         if (message === "PICKBAZAR_ERROR.NOT_AUTHORIZED") {
-          Cookies.remove("TOKEN");
-          Router.push("/login");
+          Cookies.remove("AUTH_CRED");
+          Router.push("/");
         }
         console.log(
           `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
@@ -87,10 +88,10 @@ export function initializeApollo(initialState: any = null) {
     // Merge the existing cache into data passed from getStaticProps/getServerSideProps
     const data = deepMerge(initialState, existingCache, {
       // combine arrays using object equality (like in sets)
-      arrayMerge: (destinationArray: any, sourceArray: any) => [
+      arrayMerge: (destinationArray, sourceArray) => [
         ...sourceArray,
-        ...destinationArray.filter((d: any) =>
-          sourceArray.every((s: any) => !isEqual(d, s))
+        ...destinationArray.filter((d) =>
+          sourceArray.every((s) => !isEqual(d, s))
         ),
       ],
     });

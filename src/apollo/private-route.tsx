@@ -1,13 +1,20 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { getAuthCredentials } from "./auth-utils";
+import { getAuthCredentials, hasAccess } from "./auth-utils";
 
-const PrivateRoute = (authProps: any, children?: any) => {
+interface PrivateRouteProps {
+  authProps: any;
+  children: React.ReactNode;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, authProps }) => {
   const router = useRouter();
-  const token = getAuthCredentials();
+  const { token } = getAuthCredentials();
+  console.log("Log from private routes", token);
   const isUser = !!token;
+
   React.useEffect(() => {
-    if (false) router.replace("/login"); // If not authenticated, force log in
+    if (!isUser) router.replace("/login"); // If not authenticated, force log in
   }, [isUser]);
 
   if (isUser) {

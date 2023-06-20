@@ -1,4 +1,8 @@
-import { setAuthCredentials } from "@/apollo/auth-utils";
+import {
+  allowedRoles,
+  hasAccess,
+  setAuthCredentials,
+} from "@/apollo/auth-utils";
 import { LOGIN_MUTATION } from "@/graphql/mutation";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
@@ -19,9 +23,11 @@ export const LoginForm = () => {
         },
       },
       onCompleted: ({ loginUser }) => {
-        if (loginUser) {
-          setAuthCredentials(loginUser);
+        if (hasAccess(allowedRoles, allowedRoles as string[])) {
+          console.log("data.login.permissions", loginUser);
+          setAuthCredentials(loginUser, allowedRoles);
           router.push("/");
+          return;
         }
       },
     });
