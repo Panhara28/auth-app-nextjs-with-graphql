@@ -4,9 +4,8 @@ import AppLayout from "@/component/AppLayout";
 import { getAuthCredentials, isAuthenticated } from "@/apollo/auth-utils";
 
 const AdminDashboard = dynamic(() => import("@/component/AdminDashboard"));
-const OwnerDashboard = dynamic(() => import("@/component/OwnerDashboard"));
 
-export default function Dashboard({ userPermissions }: any) {
+export default function Dashboard() {
   return <AdminDashboard />;
 }
 
