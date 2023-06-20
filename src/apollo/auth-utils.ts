@@ -18,7 +18,7 @@ export const ownerOnly = [STORE_OWNER];
 export const ownerAndStaffOnly = [STORE_OWNER, STAFF];
 
 export function setAuthCredentials(token: string) {
-  Cookie.set(AUTH_CRED, JSON.stringify({ token }));
+  Cookie.set(AUTH_CRED, token);
 }
 
 export function setEmailVerified(emailVerified: boolean) {
@@ -41,7 +41,9 @@ export function getAuthCredentials(context?: any): {
     authCred = Cookie.get(AUTH_CRED);
   }
   if (authCred) {
-    return JSON.parse(authCred);
+    return {
+      token: authCred,
+    };
   }
   return { token: null };
 }
