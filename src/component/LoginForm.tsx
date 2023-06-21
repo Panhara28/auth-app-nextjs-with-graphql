@@ -19,7 +19,6 @@ export const LoginForm = () => {
         },
       },
       onCompleted: ({ loginUser }) => {
-        console.log("data.login.permissions", loginUser);
         setAuthCredentials(loginUser);
         router.push("/");
         return;

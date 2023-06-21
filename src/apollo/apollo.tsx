@@ -27,7 +27,6 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 function createApolloClient() {
   const authLink = setContext((_, { headers }) => {
     const { token } = getAuthCredentials();
-    console.log("Log from CreateApolloClient", token);
     return {
       headers: {
         ...headers,

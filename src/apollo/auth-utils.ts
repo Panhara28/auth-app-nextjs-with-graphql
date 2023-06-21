@@ -1,9 +1,9 @@
 import Cookie from "js-cookie";
 import SSRCookie from "cookie";
+import jwt from "jsonwebtoken";
 import {
   AUTH_CRED,
   EMAIL_VERIFIED,
-  PERMISSIONS,
   STAFF,
   STORE_OWNER,
   SUPER_ADMIN,
@@ -53,5 +53,14 @@ export function parseSSRCookie(context: any) {
 }
 
 export function isAuthenticated(_cookies: any) {
-  return !!_cookies["token"];
+  try {
+    const decodedToken = jwt.verify(_cookies["token"], "123123");
+    if (!!decodedToken) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
