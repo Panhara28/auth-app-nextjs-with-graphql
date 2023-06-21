@@ -2,21 +2,14 @@ import dynamic from "next/dynamic";
 import type { GetServerSideProps } from "next";
 import AppLayout from "@/component/AppLayout";
 import { getAuthCredentials, isAuthenticated } from "@/apollo/auth-utils";
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import useMe from "@/hooks/useMe";
 
 const AdminDashboard = dynamic(() => import("@/component/AdminDashboard"));
 
-const ME_QUERY = gql`
-  query Me {
-    me {
-      fullname
-    }
-  }
-`;
-
 export default function Dashboard() {
-  const { data, loading } = useQuery(ME_QUERY);
-  if (loading || !data) <>Loading...</>;
+  const me = useMe();
+  console.log(me);
   return <AdminDashboard />;
 }
 
@@ -34,6 +27,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
   return {
-    props: {},
+    props: {
+      token,
+    },
   };
 };
